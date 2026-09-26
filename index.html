@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Marriage Invitation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#f6efdd; --gold:#cfa858; --gold-soft:#e6cf9a;
+    --panel: rgba(9,28,26,0.42); --border: rgba(207,168,88,0.5);
+    box-sizing:border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html{scroll-behavior:smooth; scroll-padding-top: env(safe-area-inset-top, 0px); height:100%;}
+  *{box-sizing:inherit;}
+  body{
+    margin:0; min-height:100%; color:var(--ink);
+    font-family:'Cormorant Garamond',serif;
+    overflow-x:hidden; position:relative;
+    background: linear-gradient(180deg,#050914 0%,#0b1b30 40%,#12283f 75%,#1b3a52 100%);
+  }
+  #scene{ position:fixed; inset:0; z-index:0; overflow:hidden; }
+  #snowCanvas{ position:absolute; inset:0; width:100%; height:100%; filter:brightness(1.15); }
+  .stars{ position:absolute; inset:0; background-image:
+      radial-gradient(1.5px 1.5px at 15% 20%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 75% 15%, #fff, transparent),
+      radial-gradient(1px 1px at 40% 30%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 60% 45%, #fff, transparent),
+      radial-gradient(1px 1px at 90% 25%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 25% 55%, #fff, transparent),
+      radial-gradient(1px 1px at 50% 10%, #fff, transparent);
+    background-size: 100% 100%; animation: twinkle 4s ease-in-out infinite alternate; opacity:0.8;
+  }
+  @keyframes twinkle{ from{opacity:0.5;} to{opacity:1;} }
+  .moon{ position:absolute; top:6%; right:12%; width:70px; height:70px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #fffef2, #eef0d6 60%, #d9dcb8 100%);
+    box-shadow: 0 0 60px 20px rgba(255,255,235,0.35), 0 0 120px 60px rgba(255,255,235,0.15);
+  }
+  .mountains{ position:absolute; bottom:14%; left:0; width:100%; }
+  .mtn-far{ fill:#1b3350; opacity:0.85; }
+  .mtn-near{ fill:#0e2136; }
+  .snowcap{ fill:#e9eef5; opacity:0.85; }
+  .grass{ position:absolute; bottom:0; left:0; width:100%; height:16vh; display:flex; align-items:flex-end; }
+  .grass svg{ position:absolute; bottom:0; width:110%; left:-5%; }
+  .g1{ animation: sway 4.5s ease-in-out infinite; transform-origin:bottom; }
+  .g2{ animation: sway 3.8s ease-in-out infinite 0.4s; transform-origin:bottom; }
+  .g3{ animation: sway 5.2s ease-in-out infinite 0.9s; transform-origin:bottom; }
+  @keyframes sway{
+    0%,100%{ transform: rotate(-1.2deg); }
+    50%{ transform: rotate(1.4deg); }
+  }
+
+  .wrap{ position:relative; z-index:1; max-width:640px; margin:0 auto; padding: 7vh 5vw 10vh; }
+  .frame{
+    border:1px solid var(--border); border-radius:6px; padding: 8vw 7vw; position:relative;
+    background: var(--panel); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06) inset, 0 30px 80px rgba(0,0,0,0.45);
+    animation: revealFrame 1.4s ease both;
+  }
+  @keyframes revealFrame{ from{opacity:0; transform: translateY(18px);} to{opacity:1; transform: translateY(0);} }
+
+  .corner{position:absolute; width:46px; height:46px; opacity:0.9;}
+  .corner svg{width:100%; height:100%;}
+  .tl{top:-1px; left:-1px;} .tr{top:-1px; right:-1px; transform:scaleX(-1);}
+  .bl{bottom:-1px; left:-1px; transform:scaleY(-1);} .br{bottom:-1px; right:-1px; transform:scale(-1,-1);}
+
+  .eyebrow{ text-align:center; letter-spacing:0.35em; font-size:0.72rem; color:var(--gold-soft); margin: 0 0 1.1rem; }
+  h1.title{
+    font-family:'Amiri', serif; font-style:italic; font-weight:700; text-align:center;
+    font-size: clamp(2.1rem, 8vw, 3.4rem); line-height:1.15; margin: 0 0 1.6rem;
+    background: linear-gradient(90deg,#e6cf9a,#d8a6a1,#a8c9b0,#cfa858,#e6cf9a);
+    background-size: 300% 100%; -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation: hueDrift 10s linear infinite;
+  }
+  @keyframes hueDrift{ 0%{background-position:0% 50%;} 100%{background-position:300% 50%;} }
+  .divider{ width:120px; height:1px; margin: 0 auto 1.8rem; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .names{ text-align:center; font-family:'Amiri', serif; font-weight:700; font-size: clamp(1.5rem, 5.5vw, 2.1rem); line-height:1.5; }
+  .names .and{ display:block; font-style:italic; font-weight:400; color: var(--gold-soft); font-size:1.05rem; margin:0.15rem 0; }
+  p.invite{ text-align:center; font-size: clamp(1.05rem, 3.4vw, 1.28rem); line-height:1.85; font-style:italic; color:#eae2c8; margin: 2.1rem auto 2rem; max-width: 46ch; }
+  p.invite strong{ font-style:normal; color: var(--gold-soft); font-weight:600; }
+  .details{ text-align:center; margin: 0 0 2.3rem; }
+  .details .row{ font-size:1.05rem; margin: 0.35rem 0; }
+  .details .label{ display:block; letter-spacing:0.2em; font-size:0.68rem; color: var(--gold-soft); margin-bottom:0.15rem; }
+  .actions{ display:flex; justify-content:center; margin: 0 0 0.5rem; }
+  .dua-btn{
+    appearance:none; background: transparent; border:1px solid var(--gold); color: var(--gold-soft);
+    font-family:'Cormorant Garamond', serif; font-size:1.05rem; letter-spacing:0.06em; padding: 0.85rem 2.1rem;
+    border-radius:2px; cursor:pointer; transition: background 0.3s ease, color 0.3s ease; text-decoration:none;
+  }
+  .dua-btn:hover, .dua-btn:focus-visible{ background: var(--gold); color: #0a2f24; outline:none; }
+  #duas{ max-height:0; overflow:hidden; transition: max-height 0.7s ease; }
+  #duas.open{ max-height: 2400px; }
+  .dua-inner{ margin-top:1.8rem; padding-top:1.6rem; border-top: 1px solid var(--border); }
+  .dua-group-label{ text-align:center; letter-spacing:0.25em; font-size:0.68rem; color:var(--gold-soft); margin: 1.4rem 0 1rem; }
+  .dua{ text-align:center; margin-bottom:1.5rem; }
+  .dua .ar{ font-family:'Amiri', serif; font-size:1.5rem; color: var(--gold-soft); line-height:1.9; direction:rtl; }
+  .dua .meaning{ font-size:0.98rem; color:#eae2c8; font-style:italic; }
+
+  footer{ text-align:center; margin-top: 4vh; padding-bottom: calc(2vh + env(safe-area-inset-bottom, 0px)); }
+  .counter{ display:inline-flex; align-items:center; gap:0.5rem; font-size:0.85rem; letter-spacing:0.08em; color: var(--gold-soft); opacity:0.9; }
+  .counter .dot{ width:6px; height:6px; border-radius:50%; background:#8fd6a8; box-shadow:0 0 6px #8fd6a8; animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+  .counter b{ color: var(--ink); font-weight:600; }
+
+  @media (prefers-reduced-motion: reduce){
+    h1.title, .counter .dot, .stars, .g1, .g2, .g3{ animation: none !important; }
+    .frame{ animation:none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="scene">
+  <canvas id="snowCanvas"></canvas>
+  <div class="stars"></div>
+  <div class="moon"></div>
+  <svg class="mountains" viewBox="0 0 1000 260" preserveAspectRatio="none" style="height:26vh;">
+    <path class="mtn-far" d="M0 260 L0 160 L150 60 L260 140 L380 40 L520 150 L650 70 L780 160 L900 90 L1000 150 L1000 260 Z"/>
+    <path class="snowcap" d="M150 60 L175 85 L125 85 Z M380 40 L405 65 L355 65 Z M650 70 L675 95 L625 95 Z M900 90 L920 110 L880 110 Z"/>
+    <path class="mtn-near" d="M0 260 L0 210 L120 120 L240 200 L340 130 L470 210 L600 140 L720 210 L850 150 L1000 210 L1000 260 Z"/>
+  </svg>
+  <div class="grass">
+    <svg class="g1" viewBox="0 0 1200 140" preserveAspectRatio="none" style="height:16vh;"><g fill="#12321f">
+      <path d="M0 140 L0 60 Q10 30 20 60 L20 140 Z"/><path d="M35 140 L35 40 Q48 10 58 40 L55 140 Z"/><path d="M75 140 L75 55 Q86 25 95 55 L92 140 Z"/><path d="M115 140 L115 35 Q128 5 138 35 L133 140 Z"/><path d="M160 140 L160 60 Q170 30 180 60 L177 140 Z"/><path d="M210 140 L210 40 Q222 10 232 40 L228 140 Z"/><path d="M260 140 L260 55 Q272 25 282 55 L278 140 Z"/><path d="M310 140 L310 35 Q322 5 332 35 L328 140 Z"/><path d="M370 140 L370 60 Q382 30 392 60 L388 140 Z"/><path d="M430 140 L430 40 Q442 10 452 40 L448 140 Z"/><path d="M500 140 L500 55 Q512 25 522 55 L518 140 Z"/><path d="M570 140 L570 35 Q582 5 592 35 L588 140 Z"/><path d="M640 140 L640 60 Q652 30 662 60 L658 140 Z"/><path d="M710 140 L710 40 Q722 10 732 40 L728 140 Z"/><path d="M780 140 L780 55 Q792 25 802 55 L798 140 Z"/><path d="M850 140 L850 35 Q862 5 872 35 L868 140 Z"/><path d="M920 140 L920 60 Q932 30 942 60 L938 140 Z"/><path d="M990 140 L990 40 Q1002 10 1012 40 L1008 140 Z"/><path d="M1060 140 L1060 55 Q1072 25 1082 55 L1078 140 Z"/><path d="M1130 140 L1130 35 Q1142 5 1152 35 L1148 140 Z"/>
+    </g></svg>
+    <svg class="g2" viewBox="0 0 1200 140" preserveAspectRatio="none" style="height:13vh; opacity:0.85;"><g fill="#0c2416">
+      <path d="M10 140 L10 70 Q22 45 30 70 L28 140 Z"/><path d="M90 140 L90 50 Q102 20 112 50 L108 140 Z"/><path d="M180 140 L180 65 Q192 40 200 65 L198 140 Z"/><path d="M270 140 L270 45 Q282 15 292 45 L288 140 Z"/><path d="M360 140 L360 70 Q372 45 380 70 L378 140 Z"/><path d="M450 140 L450 50 Q462 20 472 50 L468 140 Z"/><path d="M540 140 L540 65 Q552 40 560 65 L558 140 Z"/><path d="M630 140 L630 45 Q642 15 652 45 L648 140 Z"/><path d="M720 140 L720 70 Q732 45 740 70 L738 140 Z"/><path d="M810 140 L810 50 Q822 20 832 50 L828 140 Z"/><path d="M900 140 L900 65 Q912 40 920 65 L918 140 Z"/><path d="M990 140 L990 45 Q1002 15 1012 45 L1008 140 Z"/><path d="M1080 140 L1080 70 Q1092 45 1100 70 L1098 140 Z"/>
+    </g></svg>
+    <svg class="g3" viewBox="0 0 1200 140" preserveAspectRatio="none" style="height:10vh; opacity:0.7;"><g fill="#081a10">
+      <path d="M0 140 L0 90 Q15 70 25 90 L22 140 Z"/><path d="M100 140 L100 80 Q112 60 122 80 L118 140 Z"/><path d="M220 140 L220 90 Q232 70 242 90 L238 140 Z"/><path d="M340 140 L340 80 Q352 60 362 80 L358 140 Z"/><path d="M460 140 L460 90 Q472 70 482 90 L478 140 Z"/><path d="M580 140 L580 80 Q592 60 602 80 L598 140 Z"/><path d="M700 140 L700 90 Q712 70 722 90 L718 140 Z"/><path d="M820 140 L820 80 Q832 60 842 80 L838 140 Z"/><path d="M940 140 L940 90 Q952 70 962 90 L958 140 Z"/><path d="M1060 140 L1060 80 Q1072 60 1082 80 L1078 140 Z"/>
+    </g></svg>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="frame">
+    <div class="corner tl"><svg viewBox="0 0 46 46"><path d="M2 44 V14 Q2 2 14 2 H44" fill="none" stroke="#cfa858" stroke-width="1.2"/><circle cx="14" cy="2" r="2" fill="#cfa858"/></svg></div>
+    <div class="corner tr"><svg viewBox="0 0 46 46"><path d="M2 44 V14 Q2 2 14 2 H44" fill="none" stroke="#cfa858" stroke-width="1.2"/><circle cx="14" cy="2" r="2" fill="#cfa858"/></svg></div>
+    <div class="corner bl"><svg viewBox="0 0 46 46"><path d="M2 44 V14 Q2 2 14 2 H44" fill="none" stroke="#cfa858" stroke-width="1.2"/><circle cx="14" cy="2" r="2" fill="#cfa858"/></svg></div>
+    <div class="corner br"><svg viewBox="0 0 46 46"><path d="M2 44 V14 Q2 2 14 2 H44" fill="none" stroke="#cfa858" stroke-width="1.2"/><circle cx="14" cy="2" r="2" fill="#cfa858"/></svg></div>
+
+    <p class="eyebrow">Bismillāhir Raḥmānir Raḥīm</p>
+    <h1 class="title">Marriage Invitation</h1>
+    <div class="divider"></div>
+
+    <p class="names">Obaidulla Nadeem Khan<span class="and">weds</span>Umme Hani Waqar</p>
+
+    <p class="invite">With hearts full of gratitude, we joyfully invite you to share in our happiness
+      as we begin this new chapter together. Your presence would mean the world to us
+      as we celebrate our <strong>Waleema</strong> at</p>
+
+    <div class="details">
+      <div class="row"><span class="label">Venue</span><strong>Crystal Palace</strong></div>
+      <div class="row"><span class="label">Date</span>27th September 2026</div>
+      <div class="row"><span class="label">Time</span>7:00 PM</div>
+    </div>
+
+    <div class="actions">
+      <a href="#duas" class="dua-btn" id="duaToggle" aria-expanded="false" aria-controls="duas">Duas for the Couple ✦</a>
+    </div>
+
+    <div id="duas">
+      <div class="dua-inner">
+        <div class="dua-group-label">For their union</div>
+        <div class="dua"><p class="ar">بَارَكَ اللهُ لَكَ وَبَارَكَ عَلَيْكَ وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ</p><p class="meaning">May Allah bless you both, shower His blessings upon you, and unite you together in goodness.</p></div>
+        <div class="dua"><p class="ar">رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا</p><p class="meaning">Our Lord, let our spouses and children be a joy to our eyes, and make us a guide for those who are mindful of You.</p></div>
+        <div class="dua"><p class="ar">اللَّهُمَّ أَلِّفْ بَيْنَ قُلُوبِنَا وَأَصْلِحْ ذَاتَ بَيْنِنَا</p><p class="meaning">O Allah, unite our hearts and set right the bond between us.</p></div>
+        <div class="dua"><p class="ar">رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ وَعَلَىٰ وَالِدَيَّ وَأَنْ أَعْمَلَ صَالِحًا تَرْضَاهُ وَأَصْلِحْ لِي فِي ذُرِّيَّتِي</p><p class="meaning">My Lord, help me to be thankful for Your favor upon me and my parents, to do good that pleases You, and to bless me through my children.</p></div>
+        <div class="dua"><p class="ar">اللَّهُمَّ ارْزُقْهُمَا السَّعَادَةَ فِي الدُّنْيَا وَالْآخِرَةِ</p><p class="meaning">O Allah, grant them happiness in this world and the Hereafter.</p></div>
+
+        <div class="dua-group-label">For a lifetime of patience and love</div>
+        <div class="dua"><p class="ar">اللَّهُمَّ اجْعَلْ بَيْنَهُمَا مَحَبَّةً وَرَحْمَةً وَصَبْرًا عَلَى الْأَيَّامِ</p><p class="meaning">O Allah, place between them love, mercy, and patience through all their days.</p></div>
+        <div class="dua"><p class="ar">رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ</p><p class="meaning">Our Lord, give us goodness in this life and in the next, and shield us from the punishment of the Fire.</p></div>
+        <div class="dua"><p class="ar">اللَّهُمَّ اجْعَلْهُ سَكَنًا لَهَا وَاجْعَلْهَا سَكَنًا لَهُ</p><p class="meaning">O Allah, make him a source of peace for her, and make her a source of peace for him.</p></div>
+        <div class="dua"><p class="ar">اللَّهُمَّ لَيِّنْ قُلُوبَهُمَا عِنْدَ الْغَضَبِ وَاجْمَعْهُمَا عَلَى الْحِلْمِ وَالْعَفْوِ</p><p class="meaning">O Allah, soften their hearts whenever anger rises, and unite them upon gentleness and forgiveness.</p></div>
+        <div class="dua"><p class="ar">اللَّهُمَّ اجْعَلْ بَيْتَهُمَا عَامِرًا بِذِكْرِكَ وَقُلُوبَهُمَا مُطْمَئِنَّةً بِرِزْقِكَ إِلَى آخِرِ الْعُمُرِ</p><p class="meaning">O Allah, fill their home with Your remembrance, and keep their hearts at peace with Your provision for the rest of their lives.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="counter"><span class="dot"></span><span><b id="openCount">—</b> people have opened this invitation</span></div>
+  </footer>
+</div>
+
+<script>
+const duaToggle = document.getElementById('duaToggle');
+const duas = document.getElementById('duas');
+duaToggle.addEventListener('click', function(e){
+  e.preventDefault();
+  const open = duas.classList.toggle('open');
+  duaToggle.setAttribute('aria-expanded', open);
+  duaToggle.textContent = open ? 'Hide Duas ✦' : 'Duas for the Couple ✦';
+  if(open){ duas.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+});
+
+// ---- Snow ----
+(function(){
+  const canvas = document.getElementById('snowCanvas');
+  const ctx = canvas.getContext('2d');
+  let w,h,flakes=[];
+  function resize(){ w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  const COUNT = Math.min(140, Math.floor(window.innerWidth/8));
+  for(let i=0;i<COUNT;i++){
+    flakes.push({ x:Math.random()*w, y:Math.random()*h, r:Math.random()*2.2+0.8,
+      vy:Math.random()*0.6+0.3, vx:Math.random()*0.4-0.2, phase:Math.random()*Math.PI*2 });
+  }
+  function tick(t){
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle='rgba(255,255,255,0.95)';
+    for(const f of flakes){
+      f.y += f.vy; f.x += f.vx + Math.sin(t/2000+f.phase)*0.3;
+      if(f.y > h+5){ f.y=-5; f.x=Math.random()*w; }
+      if(f.x > w+5) f.x=-5; if(f.x < -5) f.x=w+5;
+      ctx.save();
+      ctx.shadowBlur = 6; ctx.shadowColor='rgba(255,255,255,0.9)';
+      ctx.globalAlpha = 0.55 + 0.35*Math.sin(t/1500+f.phase);
+      ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+
+// ---- Live open counter (shared db, local fallback) ----
+(function(){
+  const countEl = document.getElementById('openCount');
+  const LOCAL_KEY = 'invite_opens_local_fallback';
+  function showLocalFallback(){
+    let n = parseInt(localStorage.getItem(LOCAL_KEY) || '0', 10);
+    if (!sessionStorage.getItem('counted_this_session')) {
+      n += 1; localStorage.setItem(LOCAL_KEY, String(n));
+      sessionStorage.setItem('counted_this_session', '1');
+    }
+    countEl.textContent = n.toString();
+  }
+  async function run(){
+    try{
+      const db = await Promise.race([
+        (window.claude && window.claude.use) ? window.claude.use('db') : Promise.resolve(null),
+        new Promise(res => setTimeout(()=>res(null), 4000))
+      ]);
+      if(!db){ showLocalFallback(); return; }
+      const ref = db.doc('stats/opens');
+      ref.onSnapshot((doc) => {
+        const n = (doc && doc.data && doc.data.count) || 0;
+        countEl.textContent = n.toString();
+      });
+      try{
+        const snap = await ref.get();
+        const current = (snap && snap.data && snap.data.count) || 0;
+        await ref.set({ count: current + 1 });
+      }catch(e){ showLocalFallback(); }
+    }catch(err){ showLocalFallback(); }
+  }
+  run();
+})();
+
+// ---- Ambient sound: fantasy-island wind (60s swell envelope) + random baby-bird chirps ----
+(function(){
+  let ctx=null, started=false;
+  function buildWind(ctx, master){
+    const bufferSize = ctx.sampleRate * 60;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let lastOut = 0;
+    for(let i=0;i<bufferSize;i++){
+      const white = Math.random()*2-1;
+      lastOut = (lastOut + 0.018*white) / 1.018;
+      data[i] = lastOut * 3.6;
+    }
+    const src = ctx.createBufferSource();
+    src.buffer = buffer; src.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type='bandpass'; filter.frequency.value=700; filter.Q.value=0.5;
+    const gain = ctx.createGain(); gain.gain.value = 0.03;
+    src.connect(filter); filter.connect(gain); gain.connect(master);
+    src.start();
+    function cycle(){
+      const t0 = ctx.currentTime;
+      gain.gain.cancelScheduledValues(t0);
+      gain.gain.setValueAtTime(0.03, t0);
+      gain.gain.linearRampToValueAtTime(0.35, t0+22);
+      gain.gain.linearRampToValueAtTime(0.10, t0+60);
+    }
+    cycle();
+    setInterval(cycle, 60000);
+  }
+  function chirp(ctx, master){
+    const notes = 2 + Math.floor(Math.random()*2);
+    for(let n=0;n<notes;n++){
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.type='sine';
+      const base = 3200 + Math.random()*1200;
+      const start = ctx.currentTime + n*0.09;
+      o.frequency.setValueAtTime(base, start);
+      o.frequency.exponentialRampToValueAtTime(base*1.3, start+0.04);
+      o.frequency.exponentialRampToValueAtTime(base*0.85, start+0.09);
+      g.gain.setValueAtTime(0.0001, start);
+      g.gain.exponentialRampToValueAtTime(0.045, start+0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, start+0.13);
+      o.connect(g); g.connect(master);
+      o.start(start); o.stop(start+0.15);
+    }
+    scheduleNextChirp(ctx, master);
+  }
+  function scheduleNextChirp(ctx, master){
+    const delay = 2000 + Math.random()*8000;
+    setTimeout(()=>chirp(ctx, master), delay);
+  }
+  async function start(){
+    if(started) return; started = true;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if(ctx.state==='suspended'){ try{ await ctx.resume(); }catch(e){} }
+    const master = ctx.createGain(); master.gain.value=0.9; master.connect(ctx.destination);
+    buildWind(ctx, master);
+    scheduleNextChirp(ctx, master);
+  }
+  window.addEventListener('load', start, {once:true});
+  ['pointerdown','touchstart','keydown','scroll'].forEach(evt=>{
+    window.addEventListener(evt, start, {once:true, passive:true});
+  });
+})();
+</script>
+</body>
+</html>
+
